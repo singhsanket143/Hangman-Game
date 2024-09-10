@@ -14,7 +14,7 @@ function TextInputFormContainer() {
         console.log("Form submitted", value);
         if(value) {
             // if we have something in value then we want to go to the play page
-            navigate("/play");
+            navigate("/play", {state:{value}});
         }
     }
 
