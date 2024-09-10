@@ -1,6 +1,8 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 function PlayGame() {
+    const location = useLocation();
+    console.log(location.state.value); // Here we are reading the data
     return (
         <>
             <h1>Play Game</h1>
