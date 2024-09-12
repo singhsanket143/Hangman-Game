@@ -1,8 +1,6 @@
-import { Link, useLocation } from "react-router-dom";
-import Maskedtext from "../components/MaskedText/MaskedText";
-import LetterButtons from "../components/LetterButtons/LetterButtons";
+import {useLocation } from "react-router-dom";
 import { useState } from "react";
-import HangMan from "../components/HangMan/HangMan";
+import PlayGameUI from "./PlayGameUI";
 
 function PlayGame() {
 
@@ -28,19 +26,13 @@ function PlayGame() {
     }
 
     return (
-        <>
-            <h1>Play Game </h1>
-
-            <Maskedtext text={state.wordSelected} guessedLetters={guessedLetters} />
-            <div>
-                <LetterButtons text={state.wordSelected} guessedLetters={guessedLetters} onLetterClick={handleLetterClick} />
-
-            </div>
-            <div>
-                <HangMan step={step} />
-            </div>
-            <Link to='/start'  className="text-blue-400">Start Game Link</Link>
-        </>
+        <PlayGameUI 
+            wordSelected={state.wordSelected} 
+            guessedLetters={guessedLetters} 
+            step={step} 
+            handleLetterClick={handleLetterClick}
+            hintGiven={state.hintGiven} 
+        />
     );
 }
 
