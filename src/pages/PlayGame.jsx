@@ -1,53 +1,86 @@
-import { Link, useLocation } from "react-router-dom";
-import Maskedtext from "../components/MaskedText/MaskedText";
-import LetterButtons from "../components/LetterButtons/LetterButtons";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import HangMan from "../components/HangMan/HangMan";
+import PlayGameUI from "./PlayGameUI";
+import PopUpModal from "../components/Modal/PopUpModal";
+import { imageData } from "../components/HangMan/HangManUtility";
+import Button from "../components/Button/Button";
 
 function PlayGame() {
+  // const [searchParams] = useSearchParams();
+  // console.log(searchParams.get("text"))
 
-    // const [searchParams] = useSearchParams();
-    // console.log(searchParams.get("text"))
+  // const { text, id } = useParams();
 
-    // const { text, id } = useParams();
+  const { state } = useLocation();
+console.log({state})
+  const [guessedLetters, setGuessedLetters] = useState([]);
+  const [step, setStep] = useState(0);
+  const [isGameOver, setIsGameOver] = useState(false);
+  const [isGameWon, setIsGameWon] = useState(false);
 
-    const { state } = useLocation();
+  const navigate = useNavigate();
 
-    const [guessedLetters, setGuessedLetters] = useState([]);
-    const [step, setStep] = useState(0);
+  if (step >= imageData.length && !isGameOver) {
+    setIsGameOver(true);
+  }
 
-    function handleLetterClick(letter) {
-        if(state?.wordSelected?.toUpperCase().includes(letter)) {
-            console.log('Correct');
-        } else {
-            console.log('Wrong');
-            setStep(step + 1);
-        }
+  const checkWinCondition = (guessedLetters) => {
+    const wordArray = state.wordSelected.toUpperCase().split('');
+    return wordArray.every(letter => guessedLetters.includes(letter));
+  };
 
-        setGuessedLetters([...guessedLetters, letter]);
+  function handleLetterClick(letter) {
+    if (state.wordSelected.toUpperCase().includes(letter)) {
+      console.log("Correct");
+      const newGuessedLetters = [...guessedLetters, letter];
+      setGuessedLetters(newGuessedLetters);
+
+      if (checkWinCondition(newGuessedLetters)) {
+        setIsGameWon(true);
+        setIsGameOver(true); // End the game after a win
+      }
+
+    } else {
+      console.log("Wrong");
+      setStep(step + 1);
+      setGuessedLetters([...guessedLetters, letter]);
     }
 
-    return (
-        <>
-            <h1>Play Game </h1>
+  }
 
-            {state?.wordSelected && (
-                <>
-                    <Maskedtext text={state.wordSelected} guessedLetters={guessedLetters} />
-                    <div>
-                        <LetterButtons text={state.wordSelected} guessedLetters={guessedLetters} onLetterClick={handleLetterClick} />
+  const handleModalClose = () => {
+    window.alert(isGameWon ? "Congratulations! You won! You can play again" : "Game Over!!! Please click on play again.");
+  };
 
-                    </div>
-                    <div>
-                        <HangMan step={step} />
-                    </div>  
-                </> 
-            )}
+  const  handlePlayAgain = () => {
+    setIsGameOver(false);
+    setIsGameWon(false);
+    setStep(0);
+    setGuessedLetters([]);
+    navigate("/ ");
+  }
 
-            <Link to='/'>Home</Link>
-            <Link to='/start'  className="text-blue-400">Start Game Link</Link>
-        </>
-    );
+
+  return (
+    <div className="">
+      <PopUpModal isOpen={isGameOver} closeModal={handleModalClose}>
+        <div className="m-2 flex flex-col justify-center item-center">
+          <h1 className="text-xl mb-2 ">
+            {isGameWon ? "Congratulations! You Won!" : "Game Over!"}
+          </h1>
+          <Button text={"Play Again"} onClickHandler={handlePlayAgain}></Button>
+        </div>
+      </PopUpModal>
+
+      <PlayGameUI
+        wordSelected={state.wordSelected}
+        guessedLetters={guessedLetters}
+        step={step}
+        handleLetterClick={handleLetterClick}
+        hintGiven={state.hintGiven}
+      />
+    </div>
+  );
 }
 
 export default PlayGame;

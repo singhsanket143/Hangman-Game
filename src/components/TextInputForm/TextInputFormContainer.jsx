@@ -1,70 +1,49 @@
 import { useState } from "react";
 import TextInputForm from "./TextInputForm";
 import { useNavigate } from "react-router-dom";
+// import TextInput from "../TextInput/TextInput";
 
 function TextInputFormContainer() {
+  const [inputType, setInputType] = useState("password");
+  const [value, setValue] = useState("");
+  const [hintTextValue, setHintTextValue] = useState("");
+  const navigate = useNavigate();
 
-    const [inputType, setInputType] = useState("password");
-    const [value, setValue] = useState("");
-
-    const navigate = useNavigate(); // useNavigate is a hook that returns a navigate function
-
-    function handleFormSubmit(event) {
-        event.preventDefault();
-        console.log("Form submitted", value);
-        if(value) {
-            // if we have something in value then we want to go to the play page
-            navigate(`/play`, { state: { wordSelected: value } });
-        }
+  function handleFormSubmit(event) {
+    event.preventDefault();
+    if (value) {
+      navigate(`/play`, { state: { wordSelected: value, hintGiven: hintTextValue } });
     }
+  }
 
-    function handleTextInputChange(event) {
-        console.log("Text input changed");
-        console.log(event.target.value);
-        setValue(event.target.value);
-    }
+  function handleTextInputChange(event) {
+    setValue(event.target.value);
+  }
 
-    function handleShowHideClick() {
-        console.log("Show/Hide button clicked");
-        if (inputType === "password") {
-            setInputType("text")
-        } else {
-            setInputType("password");
-        }
-        console.log(inputType);
-        
-    }
+  function handleShowHideClick() {
+    setInputType(inputType === "password" ? "text" : "password");
+  }
 
-    // useEffect(() => {
-    //     console.log("component first load"); // not call on updates
-    // }, []); // passing empty dependency array
+  const handleHintTextInputChange = (event) => {
+    setHintTextValue(event.target.value);
+  };
 
-    // useEffect(() => {
-    //     console.log("component first load and update");
-    // }); // not passing dependency array
-
-    // useEffect(() => {
-        
-    //     console.log("component first load and update value changed");
-    // }, [value]);
-
-    // useEffect(() => {
-    //     console.log("component first load and inputType value changed");
-    // }, [inputType]);
-
-    return (
-        <>
-            <TextInputForm 
-                inputType={inputType}
-                handleFormSubmit={handleFormSubmit} 
-                handleTextInputChange={handleTextInputChange} 
-                handleShowHideClick={handleShowHideClick}
-            />
-
-        </>
-        
-    );
+  return (
+    <div className="flex flex-col sm:flex-row justify-center items-center gap-6 w-full max-w-2xl p-6 sm:p-8 lg:p-10 bg-gray-800 rounded-lg shadow-md mt-8 mb-12">
+      
+      {/* Main Input */}
+      <TextInputForm
+        inputType={inputType}
+        handleFormSubmit={handleFormSubmit}
+        handleTextInputChange={handleTextInputChange}
+        handleShowHideClick={handleShowHideClick}
+        handleHintTextInputChange={handleHintTextInputChange}
+      />
+      
+      {/* Hint Input */}
+      
+    </div>
+  );
 }
-
 
 export default TextInputFormContainer;
